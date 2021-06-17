@@ -1,7 +1,8 @@
 ---
 layout: post
 title:  "A Mobile Trash Sorting Robot"
-date:   2021-05-30 08:00:00 +00:00
+from-date:   2021-03-15 08:00:00 +00:00
+to-date:   2021-05-30 08:00:00 +00:00
 image: /images/versatile-robot.gif
 categories: Project
 author: "Chongkai Gao"
