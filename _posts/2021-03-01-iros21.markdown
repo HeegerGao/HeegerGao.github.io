@@ -5,7 +5,7 @@ date:   2021-03-01 08:00:00 +00:00
 image: /images/hands2015.png
 categories: research
 author: "Chongkai Gao"
-venue: "IROS 2021"
+venue: "International Conference on Intelligent Robots and Systems"
 slides: /pdfs/iros2021.pdf
 authors: "<strong>Chongkai Gao</strong>, Haichuan Gao, Shangqi Guo, Tianren Zhang, and Feng Chen"
 ---
