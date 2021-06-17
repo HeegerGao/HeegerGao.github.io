@@ -7,10 +7,8 @@ categories: research
 author: "Chongkai Gao"
 venue: "International Conference on Intelligent Robots and Systems"
 slides: /pdfs/iros2021.pdf
+image: /images/iros2021.gif
+video: https://cloud.tsinghua.edu.cn/f/1fa750062ee641589e38/
 authors: "<strong>Chongkai Gao</strong>, Haichuan Gao, Shangqi Guo, Tianren Zhang, and Feng Chen"
 ---
 In order to achieve continual robot imitation learning, we propose a novel trajectory generation model that employs both a generative adversarial network and adynamics prediction model to generate pseudo trajectories from all learned tasks in the new task learning process.
-
-[Presented Slides](/pdfs/iros2021.pdf){:target="_blank"}
-
-[Video](https://cloud.tsinghua.edu.cn/f/1fa750062ee641589e38/){:target="_blank"}
