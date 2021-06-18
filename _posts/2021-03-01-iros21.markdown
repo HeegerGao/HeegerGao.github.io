@@ -3,7 +3,7 @@ layout: post
 title:  "CRIL: Continual Robot Imitation Learning via Generative and Prediction Model"
 date:   2021-03-01 08:00:00 +00:00
 image: /images/iros2021.gif
-paper: /pdfs/iros2021.pdf
+paper: https://arxiv.org/pdf/2106.09422.pdf
 categories: research
 author: "Chongkai Gao"
 code: https://github.com/HeegerGao/CRIL
