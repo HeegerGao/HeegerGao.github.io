@@ -8,4 +8,4 @@ authors: Haichuan Gao, <strong>Chongkai Gao</strong>, Zhile Yang, Zekun Li, Feng
 categories: Project
 author: "Chongkai Gao"
 ---
-We buile a mobile trash sorting robot that can autonomously classify and grasp recyclable, non-recyclable and hazardous waste. In addition, it can shake the bottle to judge if there is water and then seperate the cap and bottle accordingly.
+We build a mobile trash sorting robot that can autonomously classify and grasp recyclable, non-recyclable and hazardous waste. In addition, it can shake the bottle to judge if there is water and then seperate the cap and bottle according to the judgement.
