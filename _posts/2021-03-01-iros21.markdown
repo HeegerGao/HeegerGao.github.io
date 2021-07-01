@@ -7,7 +7,7 @@ paper: https://arxiv.org/pdf/2106.09422.pdf
 categories: research
 author: "Chongkai Gao"
 code: https://github.com/HeegerGao/CRIL
-venue: "arxiv"
+venue: "IEEE/RSJ International Conference on Intelligent Robots and Systems"
 video: https://cloud.tsinghua.edu.cn/f/1fa750062ee641589e38/
 authors: "<strong>Chongkai Gao</strong>, Haichuan Gao, Shangqi Guo, Tianren Zhang, and Feng Chen"
 ---
