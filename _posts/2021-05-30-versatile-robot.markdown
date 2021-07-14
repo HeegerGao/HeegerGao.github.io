@@ -4,7 +4,7 @@ title:  "A Mobile Trash Sorting Robot"
 from-date:   2021-03-15 08:00:00 +00:00
 to-date:   2021-05-30 08:00:00 +00:00
 image: /images/versatile-robot.gif
-authors: Team: Haichuan Gao, <strong>Chongkai Gao</strong>, Zhile Yang, Zekun Li, and Feng Chen
+authors: Haichuan Gao, <strong>Chongkai Gao</strong>, Zhile Yang, Zekun Li, and Feng Chen
 categories: Project
 author: "Chongkai Gao"
 ---
