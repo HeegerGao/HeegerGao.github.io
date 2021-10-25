@@ -6,7 +6,7 @@ image: /images/DMIL.png
 categories: research
 author: "Chongkai Gao"
 venue: "preprint"
-slide: https://cloud.tsinghua.edu.cn/f/f2a30a4bcaf8494392de/
+slides: https://cloud.tsinghua.edu.cn/f/f2a30a4bcaf8494392de/
 authors: "<strong>Chongkai Gao</strong>, Yizhou Jiang, and Feng Chen"
 ---
 We present a dual meta imitation learning framework for hierarchical imitation learning methods to transfer both the learned high-level network and sub-skills quickly in new tasks.
