@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "A Mobile Trash Sorting Robot"
-from-date:   2021-03-15 08:00:00 +00:00
+from-date:   2021-01-15 08:00:00 +00:00
 to-date:   2021-05-30 08:00:00 +00:00
 image: /images/versatile-robot.gif
 authors: Haichuan Gao*, <strong>Chongkai Gao</strong>*, Zhile Yang*, Zekun Li, and Feng Chen
