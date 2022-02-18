@@ -6,7 +6,7 @@ image: /images/DMIL.png
 categories: research
 author: "Chongkai Gao"
 venue: "preprint"
-paper: http://arxiv.org/abs/2201.11981
+paper: chongkaigao.com
 slides: https://cloud.tsinghua.edu.cn/f/f2a30a4bcaf8494392de/?dl=1
 authors: "<strong>Chongkai Gao</strong>, Yizhou Jiang, and Feng Chen"
 ---
