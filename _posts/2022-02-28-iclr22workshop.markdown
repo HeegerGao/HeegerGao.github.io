@@ -2,7 +2,7 @@
 layout: post
 title:  "Subjective Learning for Conflicting Data"
 date:   2022-02-28 08:00:00 +00:00
-image: /images/DMIL.png
+image: /images/sl.png
 categories: research
 author: "Chongkai Gao"
 venue: "preprint"
