@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "Subjective Learning for Conflicting Data"
-date:   2022-02-28 08:00:00 +00:00
+title: "Subjective Learning for Conflicting Data"
+date:  2022-02-28 08:00:00 +00:00
 image: /images/Screenshot from 2022-02-28 12-43-28.png
 categories: research
 author: "Chongkai Gao"
