@@ -8,6 +8,6 @@ author: "Chongkai Gao"
 venue: "preprint"
 paper: https://arxiv.org/abs/2201.11981
 slides: https://cloud.tsinghua.edu.cn/f/f2a30a4bcaf8494392de/?dl=1
-authors: "<strong>Chongkai Gao</strong>, Yizhou Jiang, and Feng Chen"
+authors: "<strong>Chongkai Gao</strong>, Yizhou Jiang, Feng Chen"
 ---
 A dual meta imitation learning framework for hierarchical imitation learning methods to transfer both the learned high-level network and sub-skills quickly into new tasks.
