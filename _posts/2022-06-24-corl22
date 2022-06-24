@@ -1,0 +1,12 @@
+---
+layout: post
+title:  "Iterative Interactive Modeling for Knotting Plastic Bags"
+date:   2022-06-24 08:00:00 +00:00
+image: /images/corl.gif
+categories: research
+author: "Chongkai Gao"
+venue: "Preprint, under review"
+paper: https://github.com/HeegerGao/HeegerGao.github.io/blob/master/pdfs/example.pdf
+authors: "<strong>Chongkai Gao</strong>, Zekun Li, Haichuan Gao, Feng Chen"
+---
+Kotting a randomly dropped plastic bag from the air with a dual-arm robot.
