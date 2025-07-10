@@ -198,9 +198,14 @@
 
         /* 添加 research-item 的显示/隐藏样式 */
         .research-item {
-            display: none;  /* 默认隐藏 */
+            display: block; /* 改为默认显示 */
         }
-        
+
+        /* 添加这个新样式控制隐藏 */
+        .research-item.hide {
+            display: none;
+        }        
+
         .research-item.show {
             display: block;  /* 显示选中的论文 */
         }
@@ -220,11 +225,8 @@
 
     <!-- 在header下方添加选项卡导航 -->
     <div class="tab-navigation">
-        <button class="tab-button active" onclick="filterPapers('all')">Show All by Date</button>
-        <button class="tab-button" onclick="filterPapers('world-model')">World Models</button>
-        <button class="tab-button" onclick="filterPapers('foundation')">Foundation Models</button>
-        <button class="tab-button" onclick="filterPapers('lifelong')">Lifelong Learning</button>
-        <button class="tab-button" onclick="filterPapers('skill')">Skill Learning</button>
+        <button class="tab-button" data-category="selected" onclick="filterPapers('selected')">Show Selected</button>
+        <button class="tab-button" data-category="all" onclick="filterPapers('all')">Show All by Date</button>
     </div>
 
     <div class="author-notes" style="text-align: center; margin: 20px 0; color: #666; font-size: 0.9em;">
@@ -232,7 +234,25 @@
     </div>
 
     <div class="research-section">
-        <div class="research-item" data-time="2025.04" data-category="skill">
+        <div class="research-item" data-time="2025.06" data-category="selected">
+            <div class="research-content">
+                <div class="research-image">
+                    <img src="./imgs/vlaos.png" alt="Paper 1 Demo">
+                </div>
+                <div class="research-description">
+                    <h2>VLA-OS: Structuring and Dissecting Planning Representations and Paradigms in Vision-Language-Action Models</h2>
+                    <p class="authors"><strong>Chongkai Gao</strong>, Zixuan Liu, Zhenghao Chi, Junshan Huang, Xin Fei, Yiwen Hou, Yuxuan Zhang, Yudi Lin, Zhirui Fang, Zeyu Jiang, Lin Shao</p>
+                    <p class="venue" style="margin-bottom: 0;">Preprint</p>
+                    <div class="paper-links">
+                        <a href="https://arxiv.org/abs/2506.17561" target="_blank"><i class="ai ai-arxiv"></i> arXiv</a>
+                        <a href="https://nus-lins-lab.github.io/vlaos/" target="_blank"><i class="fas fa-globe"></i> Website</a>
+                        <a href="https://github.com/HeegerGao/VLA-OS" target="_blank"><i class="fab fa-github"></i> Code</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="research-item" data-time="2025.04" data-category="all">
             <div class="research-content">
                 <div class="research-image">
                     <img src="./imgs/dexsingrasp.gif" alt="Paper 1 Demo">
@@ -249,7 +269,7 @@
             </div>
         </div>
         
-        <div class="research-item" data-time="2025.03" data-category="skill">
+        <div class="research-item" data-time="2025.03" data-category="all">
             <div class="research-content">
                 <div class="research-image">
                     <img src="./imgs/metafold.png" alt="Paper 1 Demo">
@@ -257,7 +277,7 @@
                 <div class="research-description">
                     <h2>MetaFold: Language-Guided Multi-Category Garment Folding Framework via Trajectory Generation and Foundation Model</h2>
                     <p class="authors">Haonan Chen*, Junxiao Li*, Ruihai Wu, Yiwei Liu, Yiwen Hou, Zhixuan Xu, Jingxiang Guo, <strong>Chongkai Gao</strong>, Zhenyu Wei, Shensi Xu, Jiaqi Huang, Lin Shao</p>
-                    <p class="venue" style="margin-bottom: 0;">Preprint</p>
+                    <p class="venue" style="margin-bottom: 0;">IROS 2025</p>
                     <div class="paper-links">
                         <a href="https://arxiv.org/abs/2503.08372" target="_blank"><i class="ai ai-arxiv"></i> arXiv</a>
                         <a href="https://meta-fold.github.io/" target="_blank"><i class="fas fa-globe"></i> Website</a>
@@ -266,7 +286,7 @@
             </div>
         </div>
         
-        <div class="research-item" data-time="2024.12" data-category="skill">
+        <div class="research-item" data-time="2024.12" data-category="all">
             <div class="research-content">
                 <div class="research-image">
                     <img src="./imgs/telepreview.gif" alt="Paper 1 Demo">
@@ -284,7 +304,7 @@
         </div>
 
         
-        <div class="research-item" data-time="2024.11" data-category="world-model">
+        <div class="research-item" data-time="2024.11" data-category="selected">
             <div class="research-content">
                 <div class="research-image">
                     <img src="./imgs/flip.png" alt="Paper 1 Demo">
@@ -304,7 +324,7 @@
             </div>
         </div>
 
-        <div class="research-item" data-time="2024.10" data-category="skill">
+        <div class="research-item" data-time="2024.10" data-category="all">
             <div class="research-content">
                 <div class="research-image">
                     <img src="./imgs/et-seed.png" alt="Paper 1 Demo">
@@ -322,7 +342,7 @@
             </div>
         </div>
 
-        <div class="research-item" data-time="2024.03" data-category="foundation">
+        <div class="research-item" data-time="2024.03" data-category="selected">
             <div class="research-content">
                 <div class="research-image">
                     <img src="./imgs/manifm.png" alt="Paper 2 Demo">
@@ -340,7 +360,7 @@
             </div>
         </div>
 
-        <div class="research-item" data-time="2024.09" data-category="foundation">
+        <div class="research-item" data-time="2024.09" data-category="selected">
             <div class="research-content">
                 <div class="research-image">
                     <img src="./imgs/drograsp.png" alt="Paper 2 Demo">
@@ -360,7 +380,7 @@
             </div>
         </div>
 
-        <div class="research-item" data-time="2024.06" data-category="skill">
+        <div class="research-item" data-time="2024.06" data-category="selected">
             <div class="research-content">
                 <div class="research-image">
                     <img src="./imgs/riemann.png" alt="Lifelong Learning Paper 1">
@@ -378,7 +398,7 @@
             </div>
         </div>
 
-        <div class="research-item" data-time="2023.09" data-category="lifelong">
+        <div class="research-item" data-time="2023.09" data-category="selected">
             <div class="research-content">
                 <div class="research-image">
                     <img src="./imgs/libero.png" alt="Lifelong Learning Paper 2">
@@ -399,7 +419,7 @@
             </div>
         </div>
 
-        <div class="research-item" data-time="2022.10" data-category="skill">
+        <div class="research-item" data-time="2022.10" data-category="selected">
             <div class="research-content">
                 <div class="research-image">
                     <img src="./imgs/corl.gif" alt="Lifelong Learning Paper 3">
@@ -417,7 +437,7 @@
             </div>
         </div>
 
-        <div class="research-item" data-time="2022.09" data-category="skill">
+        <div class="research-item" data-time="2022.09" data-category="all">
             <div class="research-content">
                 <div class="research-image">
                     <img src="./imgs/DMIL.png" alt="Lifelong Learning Paper 3">
@@ -436,7 +456,7 @@
         </div>
 
 
-        <div class="research-item" data-time="2022.08" data-category="skill">
+        <div class="research-item" data-time="2022.08" data-category="all">
             <div class="research-content">
                 <div class="research-image">
                     <img src="./imgs/sl.png" alt="Lifelong Learning Paper 3">
@@ -453,7 +473,7 @@
             </div>
         </div>
 
-        <div class="research-item" data-time="2021.07" data-category="lifelong">
+        <div class="research-item" data-time="2021.07" data-category="all">
             <div class="research-content">
                 <div class="research-image">
                     <img src="./imgs/iros2021.gif" alt="Lifelong Learning Paper 3">
@@ -479,59 +499,50 @@
             // 更新按钮状态
             const buttons = document.querySelectorAll('.tab-button');
             buttons.forEach(button => {
-                // 移除所有按钮的active状态
                 button.classList.remove('active');
-                
-                // 根据点击的类别添加active状态
-                if (category === 'all' && button.textContent.includes('Show All')) {
-                    button.classList.add('active');
-                } else if (category === 'world-model' && button.textContent.includes('World Models')) {
-                    button.classList.add('active');
-                } else if (category === 'foundation' && button.textContent.includes('Foundation')) {
-                    button.classList.add('active');
-                } else if (category === 'lifelong' && button.textContent.includes('Lifelong')) {
-                    button.classList.add('active');
-                } else if (category === 'skill' && button.textContent.includes('Skill')) {
-                    button.classList.add('active');
-                }
             });
-
+            
+            // 设置当前按钮为active
+            document.querySelector(`.tab-button[data-category="${category}"]`).classList.add('active');
+            
             const papers = document.querySelectorAll('.research-item');
             
             papers.forEach(paper => {
-                if (category === 'all' || paper.getAttribute('data-category') === category) {
-                    paper.classList.add('show');
+                if (category === 'all') {
+                    paper.classList.remove('hide');
                 } else {
-                    paper.classList.remove('show');
+                    if (paper.getAttribute('data-category') === category) {
+                        paper.classList.remove('hide');
+                    } else {
+                        paper.classList.add('hide');
+                    }
                 }
             });
             
-            // 重新排序显示的论文
+            // 重新排序论文
             const researchSection = document.querySelector('.research-section');
-            const visiblePapers = Array.from(document.querySelectorAll('.research-item.show'));
+            const visiblePapers = Array.from(papers).filter(paper => 
+                !paper.classList.contains('hide')
+            );
             
+            // 按时间排序
             visiblePapers.sort((a, b) => {
-                const timeA = a.getAttribute('data-time');
-                const timeB = b.getAttribute('data-time');
-                return timeB.localeCompare(timeA);
+                const timeA = parseFloat(a.getAttribute('data-time'));
+                const timeB = parseFloat(b.getAttribute('data-time'));
+                return timeB - timeA; // 降序排列（最新在前）
             });
             
-            visiblePapers.forEach(paper => researchSection.appendChild(paper));
+            // 重新插入DOM
+            visiblePapers.forEach(paper => {
+                researchSection.appendChild(paper);
+            });
         }
 
-        // 添加页面加载时的初始化
+        // 页面加载初始化
         window.onload = function() {
-            filterPapers('all');  // 页面加载时显示所有论文
-            
-            // 确保"Show All by Date"按钮处于激活状态
-            const buttons = document.querySelectorAll('.tab-button');
-            buttons.forEach(button => {
-                if (button.textContent.includes('Show All')) {
-                    button.classList.add('active');
-                } else {
-                    button.classList.remove('active');
-                }
-            });
+            // 给选项卡添加data-category属性（在HTML中添加）
+            // 默认显示Selected论文
+            filterPapers('selected');
         };
     </script>
 </body>
