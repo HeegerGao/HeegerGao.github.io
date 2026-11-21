@@ -1193,7 +1193,9 @@
 
             function listPhotos() {
                 var cached = readCache();
-                if (cached && Date.now() - cached.time < CACHE_TTL) {
+                // An empty list is never trusted from the cache, so the button
+                // appears as soon as the first photos are uploaded.
+                if (cached && cached.list.length && Date.now() - cached.time < CACHE_TTL) {
                     return Promise.resolve(cached.list);
                 }
                 var url = 'https://api.github.com/repos/' + REPO + '/contents/' + PHOTO_DIR;
