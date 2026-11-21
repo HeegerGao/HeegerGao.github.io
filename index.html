@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chongkai Gao</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:wght@700&family=Source+Sans+Pro:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:wght@700&family=Source+Sans+Pro:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <style>
         :root {
@@ -13,6 +13,14 @@
             --link-color: #3182ce;
             --name-color: #1a365d;
             --hover-color: #4299e1;
+            --award-color: #dc2626;
+            --muted-color: #4a5568;
+            --divider-color: rgba(44, 82, 130, 0.16);
+            --accent-rule: #9fb9d3;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
@@ -75,13 +83,71 @@
             width: 400px;
         }
 
+        /* The frame keeps the shape of the default photo, so every photo in
+           imgs/profile/ fills the same box (centre-cropped) and nothing jumps. */
         .profile-image {
             width: 100%;
+            aspect-ratio: 1391 / 2019;
+            border-radius: 5px;
+            overflow: hidden;
         }
 
         .profile-image img {
+            display: block;
             width: 100%;
-            border-radius: 5px;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.2s ease;
+        }
+
+        .profile-image img.is-fading {
+            opacity: 0;
+        }
+
+        .photo-refresh-row {
+            text-align: center;
+            margin-top: 12px;
+            line-height: 1.2;
+        }
+
+        .photo-refresh {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border: 1px solid var(--divider-color);
+            border-radius: 999px;
+            background: transparent;
+            color: var(--primary-color);
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .photo-refresh[hidden] {
+            display: none;
+        }
+
+        .photo-refresh:hover {
+            color: var(--link-color);
+            border-color: var(--link-color);
+            background-color: rgba(49, 130, 206, 0.1);
+        }
+
+        .photo-refresh:focus-visible,
+        .text-toggle:focus-visible {
+            outline: 2px solid var(--hover-color);
+            outline-offset: 3px;
+        }
+
+        .photo-refresh.is-spinning i {
+            animation: photo-refresh-spin 0.6s ease;
+        }
+
+        @keyframes photo-refresh-spin {
+            to { transform: rotate(360deg); }
         }
 
         .content-section {
@@ -138,68 +204,410 @@
             font-family: 'Times New Roman', Times, serif;
         }
 
-        .awards-section {
+        /* ---------- Sections ---------- */
+
+        .section {
             margin-top: 60px;
             padding: 0 40px;
+            scroll-margin-top: 20px;
         }
 
-        .awards-section h2 {
-            color: #1a365d;
+        .section-heading {
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 6px 18px;
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--divider-color);
+        }
+
+        .section-heading h2 {
+            color: var(--name-color);
             font-family: 'Playfair Display', serif;
             font-size: 30px;
-            margin-bottom: 20px;
+            line-height: 1.3;
+            margin: 0;
         }
 
-        .awards-list {
-            list-style-type: none;
+        .section-note {
+            margin-left: auto;
+            color: #666;
+            font-size: 17px;
+        }
+
+        /* Small text buttons: "show selected / show all", "[show more]" */
+        .text-toggle {
+            border: 0;
+            background: none;
             padding: 0;
+            color: var(--primary-color);
+            font-family: 'Inter', sans-serif;
+            font-size: 17px;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
         }
 
-        .awards-list li {
+        .text-toggle:hover {
+            color: var(--link-color);
+        }
+
+        .text-toggle.is-active {
+            color: var(--link-color);
+            border-bottom-color: var(--link-color);
+        }
+
+        .filter-nav {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 17px;
+            color: #8b97a3;
+        }
+
+        /* ---------- Dated lists: news, awards, talks, teaching ---------- */
+
+        .cv-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
             font-family: 'Inter', sans-serif;
             font-size: 20px;
-            margin-bottom: 15px;
-            padding-left: 20px;
-            position: relative;
+            line-height: 1.6;
+            --date-width: 112px;
         }
 
-        .awards-list li::before {
-            content: "•";
+        .cv-list--year {
+            --date-width: 62px;
+        }
+
+        .cv-list--range {
+            --date-width: 150px;
+        }
+
+        .cv-list li {
+            display: grid;
+            grid-template-columns: var(--date-width) minmax(0, 1fr);
+            column-gap: 18px;
+            align-items: start;
+            padding: 6px 0;
+        }
+
+        .cv-date {
+            padding-left: 10px;
+            border-left: 3px solid var(--accent-rule);
             color: var(--primary-color);
-            position: absolute;
-            left: 0;
+            font-weight: 600;
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
         }
 
-        .teaching-section {
-            margin-top: 60px;
-            padding: 0 40px;
-        }
-
-        .teaching-section h2 {
-            color: #1a365d;
-            font-family: 'Playfair Display', serif;
-            font-size: 30px;
-            margin-bottom: 20px;
-        }
-
-        .teaching-list {
-            list-style-type: none;
+        /* Lists without a date column: academic service */
+        .plain-list {
+            list-style: none;
+            margin: 0;
             padding: 0;
-        }
-
-        .teaching-list li {
             font-family: 'Inter', sans-serif;
             font-size: 20px;
-            margin-bottom: 15px;
-            padding-left: 20px;
-            position: relative;
+            line-height: 1.6;
         }
 
-        .teaching-list li::before {
-            content: "•";
+        .plain-list li {
+            padding: 6px 0 6px 13px;
+            border-left: 3px solid var(--accent-rule);
+            margin-bottom: 6px;
+        }
+
+        .plain-list strong {
             color: var(--primary-color);
-            position: absolute;
-            left: 0;
+            font-weight: 600;
+        }
+
+        .cv-list.collapsed .is-extra {
+            display: none;
+        }
+
+        .list-toggle-row {
+            margin-top: 8px;
+            line-height: 1.2;
+        }
+
+        .award-highlight {
+            color: var(--award-color);
+            font-weight: 700;
+        }
+
+        /* Main-conference awards in the Awards list: bold blue, like links */
+        .award-major {
+            color: var(--link-color);
+            font-weight: 600;
+        }
+
+        /* ---------- Research ---------- */
+
+        .pub {
+            display: grid;
+            grid-template-columns: 300px minmax(0, 1fr);
+            column-gap: 32px;
+            align-items: center;
+            padding: 22px 12px;
+            border-bottom: 1px solid var(--divider-color);
+            transition: background-color 0.2s ease;
+        }
+
+        .pub:hover {
+            background-color: rgba(255, 255, 255, 0.55);
+        }
+
+        .pub-list.selected-only .pub:not(.pub--selected) {
+            display: none;
+        }
+
+        .pub-media {
+            display: block;
+            padding: 0;
+            border-radius: 8px;
+            line-height: 0;
+        }
+
+        .pub-media:hover {
+            background-color: transparent;
+        }
+
+        .pub-media img,
+        .pub-media video {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .pub-body {
+            line-height: 1.4;
+        }
+
+        .pub-body p {
+            margin: 0;
+        }
+
+        .pub-title {
+            display: block;
+            padding: 0;
+            margin-bottom: 6px;
+            color: var(--name-color);
+            font-size: 23px;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        a.pub-title:hover {
+            color: var(--link-color);
+            background-color: transparent;
+        }
+
+        .pub-authors {
+            color: var(--muted-color);
+            font-size: 19px;
+        }
+
+        .pub-authors strong {
+            color: var(--name-color);
+            font-weight: 600;
+        }
+
+        .pub-authors sup {
+            line-height: 0;
+            color: var(--primary-color);
+        }
+
+        .pub-venue {
+            padding-top: 6px;
+            color: #2d3748;
+            font-size: 19px;
+            font-weight: 600;
+        }
+
+        .pub-venue em {
+            font-style: italic;
+        }
+
+        .pub-note {
+            color: var(--muted-color);
+            font-size: 18px;
+        }
+
+        .pub-links {
+            padding-top: 6px;
+            color: #a0aec0;
+            font-size: 19px;
+        }
+
+        .pub-links a {
+            margin-left: -4px;
+        }
+
+        .pub-links a + a {
+            margin-left: 0;
+        }
+
+        /* ---------- Small screens ---------- */
+
+        @media (max-width: 900px) {
+            body {
+                padding: 16px 20px;
+                font-size: 18px;
+                line-height: 1.7;
+            }
+
+            header {
+                justify-content: center;
+                padding: 12px 20px;
+                margin: -16px -20px 16px -20px;
+            }
+
+            header h1 {
+                display: none;
+            }
+
+            nav ul {
+                line-height: 2;
+            }
+
+            nav ul li {
+                margin: 0 4px;
+            }
+
+            nav ul li a {
+                font-size: 18px;
+                padding: 4px 6px;
+            }
+
+            .main-container {
+                flex-direction: column;
+                gap: 16px;
+                margin-top: 24px;
+            }
+
+            .left-section {
+                width: min(100%, 320px);
+                margin: 0 auto;
+            }
+
+            .name {
+                font-size: 2.1em;
+                margin: 16px 0 20px;
+            }
+
+            .email {
+                font-size: 20px;
+            }
+
+            .contact-icons a {
+                font-size: 26px;
+                margin: 0 9px;
+            }
+
+            .section {
+                margin-top: 44px;
+                padding: 0;
+            }
+
+            .section-heading h2 {
+                font-size: 26px;
+            }
+
+            .section-note {
+                margin-left: 0;
+                font-size: 15px;
+            }
+
+            .cv-list {
+                font-size: 16px;
+                --date-width: 84px;
+            }
+
+            .cv-list--year {
+                --date-width: 50px;
+            }
+
+            .cv-list--range {
+                --date-width: 118px;
+            }
+
+            .cv-list li {
+                column-gap: 12px;
+            }
+
+            .plain-list {
+                font-size: 16px;
+            }
+
+            .plain-list li {
+                padding-left: 10px;
+            }
+
+            .cv-date {
+                padding-left: 8px;
+            }
+
+            .pub {
+                grid-template-columns: 1fr;
+                row-gap: 14px;
+                padding: 20px 0;
+            }
+
+            .pub-media {
+                max-width: 420px;
+            }
+
+            .pub-title {
+                font-size: 20px;
+            }
+
+            .pub-authors,
+            .pub-venue,
+            .pub-links {
+                font-size: 17px;
+            }
+
+            .pub-note {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav ul li {
+                margin: 0;
+            }
+
+            nav ul li a {
+                font-size: 16px;
+                padding: 4px 5px;
+            }
+
+            .name {
+                font-size: 1.7em;
+            }
+
+            .photo-refresh {
+                font-size: 14px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            .profile-image img,
+            .photo-refresh.is-spinning i {
+                transition: none;
+                animation: none;
+            }
         }
     </style>
 </head>
@@ -208,7 +616,10 @@
         <h1></h1>
         <nav>
             <ul>
-                <li><a href="research.html">Research</a></li>
+                <li><a href="#news">News</a></li>
+                <li><a href="#research">Research</a></li>
+                <li><a href="#awards">Awards</a></li>
+                <li><a href="#talks">Talks</a></li>
                 <li><a href="./files/resume.pdf">CV</a></li>
             </ul>
         </nav>
@@ -216,95 +627,684 @@
 
     <div class="main-container">
         <div class="left-section">
+            <!-- Default photo. More photos go in imgs/profile/ (see the README there). -->
             <div class="profile-image">
-                <img src="./imgs/yuweishijpg.jpg" alt="Profile Photo">
+                <img id="profile-img" src="./imgs/yuweishijpg.jpg" alt="Photo of Chongkai Gao">
+            </div>
+            <div class="photo-refresh-row">
+                <button type="button" id="photo-refresh" class="photo-refresh" hidden>
+                    <i class="fas fa-arrows-rotate" aria-hidden="true"></i>
+                    <span>Refresh to see a different Chongkai</span>
+                </button>
             </div>
             <p class="email">Email: heegergao at gmail.com</p>
             <div class="contact-icons">
-                <a href="https://github.com/HeegerGao" target="_blank"><i class="fab fa-github"></i></a>
-                <a href="https://scholar.google.com/citations?user=l_mOqY8AAAAJ&hl=en" target="_blank"><i class="fas fa-graduation-cap"></i></a>
-                <a href="https://x.com/GChongkai" target="_blank"><i class="fab fa-x-twitter"></i></a>
-                <a href="https://www.linkedin.com/in/chongkai-gao-31370b2a0/" target="_blank"><i class="fab fa-linkedin"></i></a>
-                <a href="./imgs/wechat.png" target="_blank"><i class="fab fa-weixin"></i></a>
-                <a href="https://www.zhihu.com/people/heeger-7" target="_blank"><i class="fab fa-zhihu"></i></a>
-                <a href="https://www.xiaohongshu.com/user/profile/5f33ec3f0000000001004204" target="_blank"><iconify-icon icon="simple-icons:xiaohongshu" width="36" height="36" style="font-size:20px;vertical-align:middle;"></iconify-icon></a>
+                <a href="https://github.com/HeegerGao" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://scholar.google.com/citations?user=l_mOqY8AAAAJ&hl=en" target="_blank" aria-label="Google Scholar"><i class="fas fa-graduation-cap"></i></a>
+                <a href="https://x.com/GChongkai" target="_blank" aria-label="X"><i class="fab fa-x-twitter"></i></a>
+                <a href="https://www.linkedin.com/in/chongkai-gao-31370b2a0/" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="./imgs/wechat.png" target="_blank" aria-label="WeChat"><i class="fab fa-weixin"></i></a>
+                <a href="https://www.zhihu.com/people/heeger-7" target="_blank" aria-label="Zhihu"><i class="fab fa-zhihu"></i></a>
+                <a href="https://www.xiaohongshu.com/user/profile/5f33ec3f0000000001004204" target="_blank" aria-label="Xiaohongshu"><iconify-icon icon="simple-icons:xiaohongshu" width="36" height="36" style="font-size:20px;vertical-align:middle;"></iconify-icon></a>
             </div>
         </div>
-        
+
         <div class="content-section">
             <section>
                 <p class="name">Chongkai Gao 高崇凯</p>
                 <p>I am a PhD student at <a href="https://www.comp.nus.edu.sg/">School of Computing</a>, <a href="https://www.nus.edu.sg/">National University of Singapore</a>, advised by Prof. <a href="https://linsats.github.io/">Lin Shao</a>. I am a robotics and AI researcher.</p>
                 <p>Currently, I am a visiting PhD student of Prof. <a href="http://vision.stanford.edu/">Fei-Fei Li's group</a> at Stanford University. </p>
-                <p>My research is about building intelligent robots that can perform general-purpose manipulation tasks with:
-                    <ul>
-                        <li>Robotic world models to see, reason, and plan in the real world.</li>
-                        <li>Manipulation foundation models to deal with real-world contact dynamics across diverse objects, skills, and embodiments.</li>
-                        <li>Benchmarking robot manipulation tasks, models, and algorithms.</li>
-                    </ul>
-                </p>
+                <p>My research is about building intelligent robots that can perform general-purpose manipulation tasks with:</p>
+                <ul>
+                    <li>Robotic world models to see, reason, and plan in the real world.</li>
+                    <li>Manipulation foundation models to deal with real-world contact dynamics across diverse objects, skills, and embodiments.</li>
+                    <li>Benchmarking robot manipulation tasks, models, and algorithms.</li>
+                </ul>
                 <p>Previously, I obtained my Master's Degree and my Bachelor's degree from <a href="http://www.au.tsinghua.edu.cn/">Department of Automation</a>, <a href="https://www.tsinghua.edu.cn/">Tsinghua University</a>, under the supervision of Prof. <a href="https://www.au.tsinghua.edu.cn/info/1088/3084.htm">Feng Chen</a>.</p>
                 <!-- <p style="color: #dc2626; font-weight: 800;">Looking for visiting or internship opportunities in the United States 2025-2026!</p> -->
             </section>
         </div>
     </div>
 
-    <!-- 添加Awards部分 -->
-    <div class="awards-section">
-        <h2>Awards and Honors</h2>
-        <ul class="awards-list">
-            <li>Outstanding Paper Award, IROS workshop on Rethinking Bimanual Manipulation Beyond Single-Arm Policies, 2026</li>
-            <li>Research Achievement Award, NUS School of Computing, 2025</li>
-            <li>Outstanding Paper Award, NeurIPS 2025 Embodied World Models for Decision Making Workshop</li>
-            <li>Best Paper Award, ICRA 2025 Human-Centric Multilateral Teleoperation Workshop.</li>
-            <li>Best Paper Award on Robot Manipulation and Locomotion, ICRA 2025.</li>
-            <li>Best Robotics Paper Award, CoRL 2024 Workshop on MAPoDeL.</li>
-            <li><a href="https://www.comp.nus.edu.sg/programmes/pg/phdcs/scholarships/#pgf">President’s Graduate Fellowship (PGF)</a>, NUS, 2024.</li>
-            <li>Excellent Intern, <a href="https://www.mech-mind.com/">Mech-Mind Robotics</a>, 2023.</li>
-            <li>Best System Paper Nomination, <a href="https://corl2022.org/">CoRL 2022</a>.</li>
-            <li>Excellent Graduates, Tsinghua University, 2020.</li>
-<!--             <li>Philobiblion Scholarship, Tsinghua University, 2019.</li> -->
-            <li>Third Place Award, Southern California Software Pioneer Hackathon, 2019.</li>
-            <li>Best Team Culture Award, International Aerial Robotics Competition (Asia-Pacific Venue), 2019.</li>
-<!--             <li>Social Practice Award, Tsinghua University, 2017.</li> -->
-            
+    <!-- ==================== News ====================
+         One <li> per item, newest first, dated "Mon YYYY". Only the last 12
+         months are shown; older items are hidden automatically until the
+         visitor clicks [show more]. -->
+    <section class="section" id="news">
+        <div class="section-heading">
+            <h2>News</h2>
+        </div>
+        <ul class="cv-list collapsed" id="news-list">
+            <li><span class="cv-date">Nov 2026</span><span><a href="https://dreamcan.github.io/">DreamCan</a> won the <span class="award-highlight">Best Paper Award Finalist</span> at the <a href="https://compositional-robotics.github.io/">CoRL 2026 Workshop on Compositional and Modular Learning in Robotics</a>.</span></li>
+            <li><span class="cv-date">Nov 2026</span><span>Invited talk on <a href="https://dreamcan.github.io/">DreamCan</a> at RoboPapers. Thanks Chris Paxton!</span></li>
+            <li><span class="cv-date">Oct 2026</span><span><a href="https://maniladder-benchmark.github.io/">ManiLadder</a> won the <span class="award-highlight">Outstanding Paper Award</span> at the <a href="https://bimanual-robot-learning.github.io/">IROS 2026 Workshop on Rethinking Bimanual Manipulation Beyond Single-Arm Policies</a>.</span></li>
+            <li><span class="cv-date">Oct 2026</span><span>Invited talk on <a href="https://dreamcan.github.io/">DreamCan</a> at Prof. <a href="https://jiajunwu.com/">Jiajun Wu</a>'s group at Stanford University.</span></li>
+            <li><span class="cv-date">Jun 2026</span><span><a href="https://quantitativemanipulation.github.io/">QuaMa</a> is accepted at IROS 2026.</span></li>
+            <li><span class="cv-date">Feb 2026</span><span>Started as a visiting scholar at the <a href="https://svl.stanford.edu/">Stanford Vision and Learning Lab (SVL)</a>, advised by Prof. <a href="http://vision.stanford.edu/">Fei-Fei Li</a>.</span></li>
+            <li><span class="cv-date">Dec 2025</span><span><a href="https://nus-lins-lab.github.io/vlaos/">VLA-OS</a> received the <span class="award-highlight">Outstanding Paper Award</span> at the NeurIPS 2025 <a href="https://embodied-world-models.github.io/">Embodied World Models for Decision Making Workshop</a>.</span></li>
+            <li><span class="cv-date">Nov 2025</span><span><a href="https://arxiv.org/abs/2512.16302">ManiLong-Shot</a> is accepted at AAAI 2026.</span></li>
+            <li><span class="cv-date">Sep 2025</span><span><a href="https://nus-lins-lab.github.io/vlaos/">VLA-OS</a> is accepted at NeurIPS 2025.</span></li>
+            <li><span class="cv-date">Jun 2025</span><span><a href="https://meta-fold.github.io/">MetaFold</a> is accepted at IROS 2025.</span></li>
+            <li><span class="cv-date">May 2025</span><span><a href="https://nus-lins-lab.github.io/drograspweb/">D(R, O)-Grasp</a> received the <span class="award-highlight">Best Paper Award on Robot Manipulation and Locomotion</span> at ICRA 2025, and <a href="https://nus-lins-lab.github.io/telepreview/">TelePreview</a> received the <span class="award-highlight">Best Paper Award</span> at the ICRA 2025 Human-Centric Multilateral Teleoperation Workshop.</span></li>
+            <li><span class="cv-date">Jan 2025</span><span><a href="https://nus-lins-lab.github.io/flipweb/">FLIP</a> and <a href="https://et-seed.github.io/">ET-SEED</a> are accepted at ICLR 2025, and <a href="https://nus-lins-lab.github.io/drograspweb/">D(R, O)-Grasp</a> is accepted at ICRA 2025.</span></li>
+            <li><span class="cv-date">Nov 2024</span><span><a href="https://nus-lins-lab.github.io/drograspweb/">D(R, O)-Grasp</a> received the <span class="award-highlight">Best Robotics Paper Award</span> at the CoRL 2024 Workshop on MAPoDeL.</span></li>
+            <li><span class="cv-date">Sep 2024</span><span><a href="https://riemann-web.github.io/">RiEMann</a> is accepted at CoRL 2024.</span></li>
+            <li><span class="cv-date">Jun 2024</span><span><a href="https://manifoundationmodel.github.io/">ManiFM</a> is accepted at IROS 2024 as an <span class="award-highlight">Oral Presentation</span>.</span></li>
+            <li><span class="cv-date">Oct 2023</span><span>My research is funded by the <a href="https://www.comp.nus.edu.sg/programmes/pg/phdcs/scholarships/#pgf">President’s Graduate Fellowship (PGF)</a>. Thanks, NUS!</span></li>
+            <li><span class="cv-date">Sep 2023</span><span><a href="https://libero-project.github.io/datasets">LIBERO</a> is accepted at NeurIPS 2023 Track Datasets and Benchmarks.</span></li>
+            <li><span class="cv-date">Dec 2022</span><span><a href="https://sites.google.com/view/iim-corl2022/home">Iterative Interactive Modeling</a> is nominated for the <span class="award-highlight">Best Systems Paper Award</span> at CoRL 2022.</span></li>
         </ul>
-    </div>
+        <div class="list-toggle-row">
+            <button type="button" class="text-toggle" id="news-toggle" aria-controls="news-list" aria-expanded="false">[show more]</button>
+        </div>
+    </section>
 
-    <!-- 添加Talks部分 -->
-    <div class="teaching-section">
-        <h2>Invited Talks</h2>
-        <ul class="teaching-list">
-            <li>[Feb, 2026] Invited Talk on my previous works at <a href="https://svl.stanford.edu/">Stanford SVL</a>. Thanks Wenlong!</li>
-            <li>[Aug, 2025] Invited Talk on VLA-OS at <a href="https://www.bilibili.com/video/BV1g58ozNEEw/?t=4.5">3D视觉工坊</a>, <a href="https://air.tsinghua.edu.cn/en/">Tsinghua AIR</a>, <a href="https://www.bilibili.com/video/BV1xTbYzZE3V/?spm_id_from=333.1387.homepage.video_card.click">Lumina Embodied AI Community</a>, and <a href="https://embodied-world-models.github.io/">NeurIPS 2025 Workshop EWM</a>.</li>
-            <li>[Jul, Aug, Sep 2025] Invited Talk on Foundation Model for Robotics at <a href="https://sites.google.com/view/showlab">Show lab, NUS</a>, Prof. <a href="https://alvinwen428.github.io/">Chuan Wen</a>'s Group at Shanghai Jiaotong University, and <a href=https://cvml.comp.nus.edu.sg/>CVML Group</a> at NUS.</li>
-            <li>[May, 2025] Invited Talk on FLIP at <a href="https://www.bilibili.com/video/BV1bUJezjEr6/?spm_id_from=333.337.search-card.all.click&vd_source=47c03ba168a1f19b604168efbc6dc5e6">将门TechBeat AI Community</a>.</li>
-            <li>[Feb, Mar, Apr 2025] Invited Talk on Hierarchical Foundation Model for Manipulation at <a href="https://www.au.tsinghua.edu.cn/info/1080/3113.htm">VIP Lab, Tsinghua University</a>, <a href="https://www.leaplab.ai/">Leap Lab, Tsinghua University</a>, and <a href="https://www.shenlanxueyuan.com/open/course/276">深蓝学院</a>.</li>
-            <li>[Dec, 2024] Invited speaker at <a href="https://sites.google.com/view/dai24-embodiedai/">Embodied AI Workshop, DAI 2024</a>.</li>
-            <li>[Dec, 2024] Invited talk on FLIP at <a href="https://mp.weixin.qq.com/s/K49AhJ_U3378ohoNs6f4ng">RL China</a>.</li>
-            <li>[Jul, 2024] Invited talk on ManiFoundationModel at <a href="https://mp.weixin.qq.com/s/K49AhJ_U3378ohoNs6f4ng">DeepTimber Community</a>.</li>
-            <li>[Oct, 2023] Invited talk of LIBERO at Shanghai AI Lab.</li>
-            <li>[Jun, 2023] Invited talk on robot skill learning at <a href="http://hxu.rocks/">TEA Lab</a>, IIIS, Tsinghua University.</li>
-            <li>[Feb, 2023] Invited talk of IIM at <a href="https://www.bilibili.com/video/BV16v4y1x7Ak/?spm_id_from=333.337.search-card.all.click&vd_source=47c03ba168a1f19b604168efbc6dc5e6">RL China</a>.</li>
+    <!-- ==================== Research ====================
+         One <article class="pub"> per paper, newest first (data-time is only
+         a note of the order). Add the class "pub--selected" to list a paper
+         under "show selected". -->
+    <section class="section" id="research">
+        <div class="section-heading">
+            <h2>Research</h2>
+            <div class="filter-nav" role="group" aria-label="Research filter">
+                <button type="button" class="text-toggle is-active" id="pub-filter-selected" aria-pressed="true">show selected</button>
+                <span aria-hidden="true">/</span>
+                <button type="button" class="text-toggle" id="pub-filter-all" aria-pressed="false">show all</button>
+            </div>
+            <span class="section-note">* equal contribution, † equal supervision</span>
+        </div>
+
+        <div class="pub-list selected-only" id="pub-list">
+            <article class="pub pub--selected" data-time="2026.11">
+                <a class="pub-media" href="https://maniladder-benchmark.github.io/" target="_blank"><img src="./imgs/maniladder.jpg" width="1800" height="883" loading="lazy" alt="ManiLadder teaser"></a>
+                <div class="pub-body">
+                    <a class="pub-title" href="https://maniladder-benchmark.github.io/" target="_blank">ManiLadder: Benchmarking Robot Manipulation Through a Categorized and Multi-Difficulty Level Task Ladder</a>
+                    <p class="pub-authors"><strong>Chongkai Gao</strong>*, Jieao Shi*, Zhaoyu Mu*, Yudi Lin*, Xuanwei Liu, Wei Ken Ng, Baiye Cheng, Anqi Chen, Kerun Liu, Zhuoran Li, Xuchuan Huang, Haoyang Li, Shengjia Zhu, Nga Teng Chan, Yuxuan Zhang, Xingyu Chen, Lin Shao</p>
+                    <p class="pub-venue"><em>arXiv preprint, 2026</em></p>
+                    <p class="pub-note">IROS 2026 Workshop on Rethinking Bimanual Manipulation, <span class="award-highlight">Outstanding Paper Award</span></p>
+                    <p class="pub-links">
+                        <a href="https://arxiv.org/abs/2611.16374" target="_blank">arXiv</a> /
+                        <a href="https://maniladder-benchmark.github.io/" target="_blank">Website</a> /
+                        <a href="https://github.com/HeegerGao/ManiLadder-Benchmark" target="_blank">Code</a>
+                    </p>
+                </div>
+            </article>
+
+            <article class="pub pub--selected" data-time="2026.10">
+                <a class="pub-media" href="https://dreamcan.github.io/" target="_blank"><video src="./imgs/dreamcan.mp4" poster="./imgs/dreamcan.jpg" width="800" height="450" autoplay muted loop playsinline preload="metadata" aria-label="DreamCan teaser video"></video></a>
+                <div class="pub-body">
+                    <a class="pub-title" href="https://dreamcan.github.io/" target="_blank">Dream What I Can: Sparse Visual Planning for Long-Horizon Robot Manipulation</a>
+                    <p class="pub-authors"><strong>Chongkai Gao</strong>, Wenlong Huang, Haonan Chen, Lin Shao, Yilun Du, Jiajun Wu, Ruohan Zhang, Li Fei-Fei</p>
+                    <p class="pub-venue"><em>arXiv preprint, 2026</em></p>
+                    <p class="pub-note">CoRL 2026 Workshop on Compositional and Modular Learning in Robotics, <span class="award-highlight">Best Paper Award Finalist</span></p>
+                    <p class="pub-links">
+                        <a href="https://arxiv.org/abs/2610.24981" target="_blank">arXiv</a> /
+                        <a href="https://dreamcan.github.io/" target="_blank">Website</a> /
+                        <a href="https://github.com/HeegerGao/DreamCan" target="_blank">Code</a>
+                    </p>
+                </div>
+            </article>
+
+            <article class="pub" data-time="2026.10">
+                <a class="pub-media" href="https://steeract.github.io/" target="_blank"><img src="./imgs/steeract.png" width="2150" height="1100" loading="lazy" alt="SteerAct teaser"></a>
+                <div class="pub-body">
+                    <a class="pub-title" href="https://steeract.github.io/" target="_blank">SteerAct: Unlocking Action Models through Few-Shot Temporal Steering</a>
+                    <p class="pub-authors">Kaichen Zhou*, Zhiyan Li*, <strong>Chongkai Gao</strong>, Yuhan Wang, Wenlong Huang, Maggie Wang, Fangneng Zhan, Manling Li, Qianqian Wang, Mac Schwager, Zhuang Liu, Li Fei-Fei, Mengyu Wang<sup>†</sup>, Paul Pu Liang<sup>†</sup></p>
+                    <p class="pub-venue"><em>arXiv preprint, 2026</em></p>
+                    <p class="pub-links">
+                        <a href="https://arxiv.org/abs/2610.25632" target="_blank">arXiv</a> /
+                        <a href="https://steeract.github.io/" target="_blank">Website</a>
+                    </p>
+                </div>
+            </article>
+
+            <article class="pub" data-time="2026.09">
+                <a class="pub-media" href="https://quantitativemanipulation.github.io/" target="_blank"><img src="./imgs/quama.png" width="963" height="712" loading="lazy" alt="QuaMa teaser"></a>
+                <div class="pub-body">
+                    <a class="pub-title" href="https://quantitativemanipulation.github.io/" target="_blank">QuaMa: Extending Skill Learning with Delta Dynamics Modeling for Precise and Generalizable Quantitative Manipulation</a>
+                    <p class="pub-authors">Yiwen Hou*, Yaoyu Cheng*, Jiayu Luo, Zhixuan Xu, <strong>Chongkai Gao</strong>, Jingxiang Guo, Lin Shao</p>
+                    <p class="pub-venue"><em>IROS 2026</em></p>
+                    <p class="pub-links">
+                        <a href="https://quantitativemanipulation.github.io/static/data/QuaMa.pdf" target="_blank">PDF</a> /
+                        <a href="https://quantitativemanipulation.github.io/" target="_blank">Website</a>
+                    </p>
+                </div>
+            </article>
+
+            <article class="pub" data-time="2026.02">
+                <a class="pub-media" href="https://contact-coverage-guided-exploration.github.io/" target="_blank"><img src="./imgs/ccge.gif" width="640" height="320" loading="lazy" alt="Contact Coverage-Guided Exploration teaser"></a>
+                <div class="pub-body">
+                    <a class="pub-title" href="https://contact-coverage-guided-exploration.github.io/" target="_blank">Contact Coverage-Guided Exploration for General-Purpose Dexterous Manipulation</a>
+                    <p class="pub-authors">Zixuan Liu*, Ruoyi Qiao*, Chenrui Tie, Xuanwei Liu, Yunfan Lou, <strong>Chongkai Gao</strong>, Zhixuan Xu, Lin Shao</p>
+                    <p class="pub-venue"><em>arXiv preprint, 2026</em></p>
+                    <p class="pub-links">
+                        <a href="https://arxiv.org/abs/2603.10971" target="_blank">arXiv</a> /
+                        <a href="https://contact-coverage-guided-exploration.github.io/" target="_blank">Website</a>
+                    </p>
+                </div>
+            </article>
+
+            <article class="pub" data-time="2025.06">
+                <a class="pub-media" href="https://arxiv.org/abs/2512.16302" target="_blank"><img src="./imgs/manilongshot.png" width="1692" height="956" loading="lazy" alt="ManiLong-Shot teaser"></a>
+                <div class="pub-body">
+                    <a class="pub-title" href="https://arxiv.org/abs/2512.16302" target="_blank">ManiLong-Shot: Interaction-Aware One-Shot Imitation Learning for Long-Horizon Manipulation</a>
+                    <p class="pub-authors">Zixuan Chen, <strong>Chongkai Gao</strong>, Lin Shao, Jieqi Shi, Jing Huo, Yang Gao</p>
+                    <p class="pub-venue"><em>AAAI 2026</em></p>
+                    <p class="pub-links">
+                        <a href="https://arxiv.org/abs/2512.16302" target="_blank">arXiv</a>
+                    </p>
+                </div>
+            </article>
+
+            <article class="pub pub--selected" data-time="2025.06">
+                <a class="pub-media" href="https://nus-lins-lab.github.io/vlaos/" target="_blank"><img src="./imgs/vlaos.png" width="1285" height="688" loading="lazy" alt="VLA-OS teaser"></a>
+                <div class="pub-body">
+                    <a class="pub-title" href="https://nus-lins-lab.github.io/vlaos/" target="_blank">VLA-OS: Structuring and Dissecting Planning Representations and Paradigms in Vision-Language-Action Models</a>
+                    <p class="pub-authors"><strong>Chongkai Gao</strong>, Zixuan Liu, Zhenghao Chi, Junshan Huang, Xin Fei, Yiwen Hou, Yuxuan Zhang, Yudi Lin, Zhirui Fang, Zeyu Jiang, Lin Shao</p>
+                    <p class="pub-venue"><em>NeurIPS 2025</em></p>
+                    <p class="pub-note">NeurIPS 2025 Embodied World Models for Decision Making Workshop, <span class="award-highlight">Outstanding Paper Award</span></p>
+                    <p class="pub-note">CoRL 2025 Eval-Deploy Workshop, <span class="award-highlight">Spotlight Talk</span></p>
+                    <p class="pub-links">
+                        <a href="https://arxiv.org/abs/2506.17561" target="_blank">arXiv</a> /
+                        <a href="https://nus-lins-lab.github.io/vlaos/" target="_blank">Website</a> /
+                        <a href="https://github.com/HeegerGao/VLA-OS" target="_blank">Code</a>
+                    </p>
+                </div>
+            </article>
+
+            <article class="pub" data-time="2025.04">
+                <a class="pub-media" href="https://nus-lins-lab.github.io/dexsingweb/" target="_blank"><img src="./imgs/dexsingrasp.gif" width="640" height="432" loading="lazy" alt="DexSinGrasp teaser"></a>
+                <div class="pub-body">
+                    <a class="pub-title" href="https://nus-lins-lab.github.io/dexsingweb/" target="_blank">DexSinGrasp: Learning a Unified Policy for Dexterous Object Singulation and Grasping in Cluttered Environments</a>
+                    <p class="pub-authors">Lixin Xu*, Zixuan Liu*, Zhewei Gui, Jingxiang Guo, Zeyu Jiang, Zhixuan Xu, <strong>Chongkai Gao</strong>, Lin Shao</p>
+                    <p class="pub-venue"><em>RA-Letters, 2025</em></p>
+                    <p class="pub-links">
+                        <a href="https://arxiv.org/abs/2504.04516" target="_blank">arXiv</a> /
+                        <a href="https://nus-lins-lab.github.io/dexsingweb/" target="_blank">Website</a>
+                    </p>
+                </div>
+            </article>
+
+            <article class="pub" data-time="2025.03">
+                <a class="pub-media" href="https://meta-fold.github.io/" target="_blank"><img src="./imgs/metafold.png" width="2161" height="1627" loading="lazy" alt="MetaFold teaser"></a>
+                <div class="pub-body">
+                    <a class="pub-title" href="https://meta-fold.github.io/" target="_blank">MetaFold: Language-Guided Multi-Category Garment Folding Framework via Trajectory Generation and Foundation Model</a>
+                    <p class="pub-authors">Haonan Chen*, Junxiao Li*, Ruihai Wu, Yiwei Liu, Yiwen Hou, Zhixuan Xu, Jingxiang Guo, <strong>Chongkai Gao</strong>, Zhenyu Wei, Shensi Xu, Jiaqi Huang, Lin Shao</p>
+                    <p class="pub-venue"><em>IROS 2025</em></p>
+                    <p class="pub-links">
+                        <a href="https://arxiv.org/abs/2503.08372" target="_blank">arXiv</a> /
+                        <a href="https://meta-fold.github.io/" target="_blank">Website</a>
+                    </p>
+                </div>
+            </article>
+
+            <article class="pub" data-time="2024.12">
+                <a class="pub-media" href="https://nus-lins-lab.github.io/telepreview/" target="_blank"><img src="./imgs/telepreview.gif" width="640" height="360" loading="lazy" alt="TelePreview teaser"></a>
+                <div class="pub-body">
+                    <a class="pub-title" href="https://nus-lins-lab.github.io/telepreview/" target="_blank">TelePreview: A User-Friendly Teleoperation System with Virtual Arm Assistance for Enhanced Effectiveness</a>
+                    <p class="pub-authors">Jingxiang Guo*, Jiayu Luo*, Zhenyu Wei*, Yiwen Hou, Zhixuan Xu, Xiaoyi Lin, <strong>Chongkai Gao</strong>, Lin Shao</p>
+                    <p class="pub-venue"><em>arXiv preprint, 2025</em></p>
+                    <p class="pub-note">ICRA 2025 Human-Centric Multilateral Teleoperation Workshop, <span class="award-highlight">Best Paper Award</span></p>
+                    <p class="pub-links">
+                        <a href="https://arxiv.org/abs/2412.13548" target="_blank">arXiv</a> /
+                        <a href="https://nus-lins-lab.github.io/telepreview/" target="_blank">Website</a>
+                    </p>
+                </div>
+            </article>
+
+            <article class="pub pub--selected" data-time="2024.11">
+                <a class="pub-media" href="https://nus-lins-lab.github.io/flipweb/" target="_blank"><img src="./imgs/flip.png" width="1861" height="1562" loading="lazy" alt="FLIP teaser"></a>
+                <div class="pub-body">
+                    <a class="pub-title" href="https://nus-lins-lab.github.io/flipweb/" target="_blank">FLIP: Flow-Centric Generative Planning as General-Purpose Manipulation World Model</a>
+                    <p class="pub-authors"><strong>Chongkai Gao</strong>, Haozhuo Zhang, Zhixuan Xu, Zhehao Cai, Lin Shao</p>
+                    <p class="pub-venue"><em>ICLR 2025</em></p>
+                    <p class="pub-note">CoRL 2024 Workshop LEAP, <span class="award-highlight">Oral Presentation</span></p>
+                    <p class="pub-note">CoRL 2024 Workshop on X-Embodiment Robot Learning</p>
+                    <p class="pub-links">
+                        <a href="https://arxiv.org/abs/2412.08261" target="_blank">arXiv</a> /
+                        <a href="https://nus-lins-lab.github.io/flipweb/" target="_blank">Website</a> /
+                        <a href="https://github.com/HeegerGao/FLIP" target="_blank">Code</a>
+                    </p>
+                </div>
+            </article>
+
+            <article class="pub" data-time="2024.10">
+                <a class="pub-media" href="https://et-seed.github.io/" target="_blank"><img src="./imgs/et-seed.png" width="1052" height="720" loading="lazy" alt="ET-SEED teaser"></a>
+                <div class="pub-body">
+                    <a class="pub-title" href="https://et-seed.github.io/" target="_blank">ET-SEED: Efficient Trajectory-Level SE(3) Equivariant Diffusion Policy</a>
+                    <p class="pub-authors">Chenrui Tie*, Yue Chen*, Ruihai Wu, Boxuan Dong, Zeyi Li, <strong>Chongkai Gao</strong><sup>†</sup>, Hao Dong<sup>†</sup></p>
+                    <p class="pub-venue"><em>ICLR 2025</em></p>
+                    <p class="pub-note">CoRL 2024 Workshop on X-Embodiment Robot Learning</p>
+                    <p class="pub-links">
+                        <a href="https://openreview.net/pdf?id=OheAR2xrtb" target="_blank">PDF</a> /
+                        <a href="https://et-seed.github.io/" target="_blank">Website</a>
+                    </p>
+                </div>
+            </article>
+
+            <article class="pub pub--selected" data-time="2024.09">
+                <a class="pub-media" href="https://nus-lins-lab.github.io/drograspweb/" target="_blank"><img src="./imgs/drograsp.png" width="2942" height="2570" loading="lazy" alt="D(R, O)-Grasp teaser"></a>
+                <div class="pub-body">
+                    <a class="pub-title" href="https://nus-lins-lab.github.io/drograspweb/" target="_blank">D(R, O)-Grasp: A Unified Representation of Robot and Object Interaction for Cross-Embodiment Dexterous Grasping</a>
+                    <p class="pub-authors">Zhenyu Wei*, Zhixuan Xu*, Jingxiang Guo, Yiwen Hou, <strong>Chongkai Gao</strong>, Zhehao Cai, Jiayu Luo, Lin Shao</p>
+                    <p class="pub-venue"><em>ICRA 2025</em>, <span class="award-highlight">Best Paper Award on Robot Manipulation and Locomotion</span></p>
+                    <p class="pub-note">CoRL 2024 Workshop LFDM, <span class="award-highlight">Oral Presentation</span></p>
+                    <p class="pub-note">CoRL 2024 Workshop MAPoDeL, <span class="award-highlight">Oral Presentation, Best Robotics Paper</span></p>
+                    <p class="pub-links">
+                        <a href="https://arxiv.org/abs/2410.01702" target="_blank">arXiv</a> /
+                        <a href="https://github.com/zhenyuwei2003/DRO-Grasp" target="_blank">Code</a> /
+                        <a href="https://nus-lins-lab.github.io/drograspweb/" target="_blank">Website</a>
+                    </p>
+                </div>
+            </article>
+
+            <article class="pub" data-time="2024.06">
+                <a class="pub-media" href="https://riemann-web.github.io/" target="_blank"><img src="./imgs/riemann.png" width="1258" height="710" loading="lazy" alt="RiEMann teaser"></a>
+                <div class="pub-body">
+                    <a class="pub-title" href="https://riemann-web.github.io/" target="_blank">RiEMann: Near Real-Time SE(3)-Equivariant Robot Manipulation without Point Cloud Segmentation</a>
+                    <p class="pub-authors"><strong>Chongkai Gao</strong>, Zhengrong Xue, Shuying Deng, Tianhai Liang, Siqi Yang, Lin Shao, Huazhe Xu</p>
+                    <p class="pub-venue"><em>CoRL 2024</em></p>
+                    <p class="pub-links">
+                        <a href="https://arxiv.org/abs/2403.19460" target="_blank">arXiv</a> /
+                        <a href="https://github.com/HeegerGao/RiEMann" target="_blank">Code</a> /
+                        <a href="https://riemann-web.github.io/" target="_blank">Website</a>
+                    </p>
+                </div>
+            </article>
+
+            <article class="pub pub--selected" data-time="2024.03">
+                <a class="pub-media" href="https://manifoundationmodel.github.io/" target="_blank"><img src="./imgs/manifm.png" width="1238" height="1056" loading="lazy" alt="ManiFoundation Model teaser"></a>
+                <div class="pub-body">
+                    <a class="pub-title" href="https://manifoundationmodel.github.io/" target="_blank">ManiFoundation Model for General-Purpose Robotic Manipulation of Contact Synthesis with Arbitrary Objects and Robots</a>
+                    <p class="pub-authors">Zhixuan Xu*, <strong>Chongkai Gao</strong>*, Zixuan Liu*, Gang Yang*, Chenrui Tie, Haozhuo Zheng, Haoyu Zhou, Weikun Peng, Debang Wang, Tianyi Chen, Zhouliang Yu, Lin Shao</p>
+                    <p class="pub-venue"><em>IROS 2024</em>, <span class="award-highlight">Oral Presentation</span></p>
+                    <p class="pub-links">
+                        <a href="https://arxiv.org/pdf/2405.06964" target="_blank">arXiv</a> /
+                        <a href="https://github.com/NUS-LinS-Lab/ManiFM" target="_blank">Code</a> /
+                        <a href="https://manifoundationmodel.github.io/" target="_blank">Website</a>
+                    </p>
+                </div>
+            </article>
+
+            <article class="pub pub--selected" data-time="2023.09">
+                <a class="pub-media" href="https://libero-project.github.io/datasets" target="_blank"><img src="./imgs/libero.png" width="1494" height="816" loading="lazy" alt="LIBERO teaser"></a>
+                <div class="pub-body">
+                    <a class="pub-title" href="https://libero-project.github.io/datasets" target="_blank">LIBERO: Benchmarking Knowledge Transfer in Lifelong Robot Learning</a>
+                    <p class="pub-authors">Bo Liu*, Yifeng Zhu*, <strong>Chongkai Gao</strong>*, Yihao Feng, Qiang Liu, Yuke Zhu, Peter Stone</p>
+                    <p class="pub-venue"><em>NeurIPS 2023 Track Datasets and Benchmarks</em></p>
+                    <p class="pub-note">ICRA 2023 Workshop on Effective Representations, Abstractions, and Priors for Robot Learning, <span class="award-highlight">Oral Presentation</span></p>
+                    <p class="pub-note">CoRL 2023 Workshop on Towards Generalist Robots: Learning Paradigms for Scalable Skill Acquisition, <span class="award-highlight">Oral Presentation</span></p>
+                    <p class="pub-links">
+                        <a href="https://arxiv.org/abs/2306.03310" target="_blank">arXiv</a> /
+                        <a href="https://github.com/Lifelong-Robot-Learning/LIBERO" target="_blank">Code</a> /
+                        <a href="https://libero-project.github.io/intro.html" target="_blank">Video</a> /
+                        <a href="https://libero-project.github.io/datasets" target="_blank">Website</a>
+                    </p>
+                </div>
+            </article>
+
+            <article class="pub pub--selected" data-time="2022.10">
+                <a class="pub-media" href="https://sites.google.com/view/iim-corl2022/home" target="_blank"><img src="./imgs/corl.gif" width="640" height="640" loading="lazy" alt="Iterative Interactive Modeling teaser"></a>
+                <div class="pub-body">
+                    <a class="pub-title" href="https://sites.google.com/view/iim-corl2022/home" target="_blank">Iterative Interactive Modeling for Knotting Plastic Bags</a>
+                    <p class="pub-authors"><strong>Chongkai Gao</strong>, Zekun Li, Haichuan Gao, Feng Chen</p>
+                    <p class="pub-venue"><em>CoRL 2022</em>, <span class="award-highlight">Best Systems Paper Nomination</span></p>
+                    <p class="pub-links">
+                        <a href="https://openreview.net/pdf?id=KDuBFXyRuE-" target="_blank">PDF</a> /
+                        <a href="https://zhuanlan.zhihu.com/p/514529145" target="_blank">Zhihu</a> /
+                        <a href="https://sites.google.com/view/iim-corl2022/home" target="_blank">Website</a>
+                    </p>
+                </div>
+            </article>
+
+            <article class="pub" data-time="2022.09">
+                <a class="pub-media" href="https://openreview.net/pdf?id=MUcBYHjzqp7" target="_blank"><img src="./imgs/DMIL.png" width="552" height="298" loading="lazy" alt="Dual Meta Imitation Learning teaser"></a>
+                <div class="pub-body">
+                    <a class="pub-title" href="https://openreview.net/pdf?id=MUcBYHjzqp7" target="_blank">Transfering Hierarchical Structure with Dual Meta Imitation Learning</a>
+                    <p class="pub-authors"><strong>Chongkai Gao</strong>, Yizhou Jiang, Feng Chen</p>
+                    <p class="pub-venue"><em>CoRL 2022</em></p>
+                    <p class="pub-links">
+                        <a href="https://openreview.net/pdf?id=MUcBYHjzqp7" target="_blank">PDF</a> /
+                        <a href="https://zhuanlan.zhihu.com/p/514529145" target="_blank">Zhihu</a> /
+                        <a href="https://github.com/HeegerGao/DMIL" target="_blank">Code</a>
+                    </p>
+                </div>
+            </article>
+
+            <article class="pub" data-time="2022.08">
+                <a class="pub-media" href="https://openreview.net/forum?id=HBSUNQvb8bc" target="_blank"><img src="./imgs/sl.png" width="541" height="254" loading="lazy" alt="Subjective Learning teaser"></a>
+                <div class="pub-body">
+                    <a class="pub-title" href="https://openreview.net/forum?id=HBSUNQvb8bc" target="_blank">Subjective Learning for Conflicting Data</a>
+                    <p class="pub-authors">Tianren Zhang, Yizhou Jiang, Xin Su, Shangqi Guo, <strong>Chongkai Gao</strong>, Feng Chen</p>
+                    <p class="pub-venue"><em>ICLR 2022 Workshop on Agent Learning in Open-Endedness</em></p>
+                    <p class="pub-links">
+                        <a href="https://openreview.net/forum?id=HBSUNQvb8bc" target="_blank">PDF</a> /
+                        <a href="https://zhuanlan.zhihu.com/p/503727154" target="_blank">Zhihu</a>
+                    </p>
+                </div>
+            </article>
+
+            <article class="pub" data-time="2021.07">
+                <a class="pub-media" href="https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=9636069" target="_blank"><img src="./imgs/iros2021.gif" width="472" height="240" loading="lazy" alt="CRIL teaser"></a>
+                <div class="pub-body">
+                    <a class="pub-title" href="https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=9636069" target="_blank">CRIL: Continual Robot Imitation Learning via Generative and Prediction Model</a>
+                    <p class="pub-authors"><strong>Chongkai Gao</strong>, Haichuan Gao, Shangqi Guo, Tianren Zhang, Feng Chen</p>
+                    <p class="pub-venue"><em>IROS 2021</em></p>
+                    <p class="pub-links">
+                        <a href="https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=9636069" target="_blank">PDF</a> /
+                        <a href="https://zhuanlan.zhihu.com/p/387253491" target="_blank">Zhihu</a> /
+                        <a href="https://github.com/HeegerGao/CRIL" target="_blank">Code</a>
+                    </p>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- ==================== Awards ==================== -->
+    <section class="section" id="awards">
+        <div class="section-heading">
+            <h2>Awards and Honors</h2>
+        </div>
+        <ul class="cv-list cv-list--year">
+            <li><span class="cv-date">2026</span><span>Best Paper Award Finalist, CoRL 2026 Workshop on Compositional and Modular Learning in Robotics</span></li>
+            <li><span class="cv-date">2026</span><span>Outstanding Paper Award, IROS 2026 Workshop on Rethinking Bimanual Manipulation Beyond Single-Arm Policies</span></li>
+            <li><span class="cv-date">2025</span><span class="award-major">Best Paper Award on Robot Manipulation and Locomotion, ICRA 2025</span></li>
+            <li><span class="cv-date">2025</span><span>Outstanding Paper Award, NeurIPS 2025 Embodied World Models for Decision Making Workshop</span></li>
+            <li><span class="cv-date">2025</span><span>Best Paper Award, ICRA 2025 Human-Centric Multilateral Teleoperation Workshop</span></li>
+            <li><span class="cv-date">2025</span><span>Research Achievement Award, NUS School of Computing</span></li>
+            <li><span class="cv-date">2024</span><span>Best Robotics Paper Award, CoRL 2024 Workshop on MAPoDeL</span></li>
+            <li><span class="cv-date">2024</span><span><a href="https://www.comp.nus.edu.sg/programmes/pg/phdcs/scholarships/#pgf">President’s Graduate Fellowship (PGF)</a>, NUS</span></li>
+            <li><span class="cv-date">2023</span><span>Excellent Intern, Mech-Mind Robotics</span></li>
+            <li><span class="cv-date">2022</span><span class="award-major">Best System Paper Nomination, <a href="https://corl2022.org/">CoRL 2022</a></span></li>
+            <li><span class="cv-date">2020</span><span>Excellent Graduates, Tsinghua University</span></li>
+            <li><span class="cv-date">2019</span><span>Philobiblion Scholarship, Tsinghua University</span></li>
+            <li><span class="cv-date">2019</span><span>Scientific and Technological Innovation Award, Tsinghua University</span></li>
+            <li><span class="cv-date">2019</span><span>Third Place Award, Southern California Software Pioneer Hackathon</span></li>
+            <li><span class="cv-date">2019</span><span>Best Team Culture Award, International Aerial Robotics Competition (Asia-Pacific Venue)</span></li>
+            <!-- <li><span class="cv-date">2017</span><span>Social Practice Award, Tsinghua University</span></li> -->
         </ul>
-    </div>
+    </section>
 
-    <!-- 添加Teaching Experience部分 -->
-    <div class="teaching-section">
-        <h2>Teaching Experience</h2>
-        <ul class="teaching-list">
-            <li>Teaching Assistant, CS624 Advanced Topics in Robotics, NUS, 2025 Spring. </li>
-            <li>Teaching Assistant, CS4278/CS5278 Intelligent Robots: Algorithms and Systems, NUS, 2024 Fall. <a href="https://github.com/NUS-LinS-Lab/Mobile-Manipulation">Course Project</a></li>
-            <li>Teaching Assistant, Matrix Analysis and Application, Tsinghua University, 2021 Spring & 2022 Fall.</li>
+    <!-- ==================== Talks ==================== -->
+    <section class="section" id="talks">
+        <div class="section-heading">
+            <h2>Invited Talks</h2>
+        </div>
+        <ul class="cv-list cv-list--range">
+            <li><span class="cv-date">Nov 2026</span><span>Invited talk on <a href="https://dreamcan.github.io/">DreamCan</a> at RoboPapers.</span></li>
+            <li><span class="cv-date">Oct 2026</span><span>Invited talk on <a href="https://dreamcan.github.io/">DreamCan</a> at Prof. <a href="https://jiajunwu.com/">Jiajun Wu</a>'s Group at Stanford University.</span></li>
+            <li><span class="cv-date">Feb 2026</span><span>Invited talk on Hierarchical Foundation Models for General-Purpose Robot Manipulation at <a href="https://svl.stanford.edu/">Stanford SVL</a>. Thanks Wenlong!</span></li>
+            <li><span class="cv-date">Aug 2025</span><span>Invited talk on VLA-OS at <a href="https://www.bilibili.com/video/BV1g58ozNEEw/?t=4.5">3D视觉工坊</a>, <a href="https://air.tsinghua.edu.cn/en/">Tsinghua AIR</a>, <a href="https://www.bilibili.com/video/BV1xTbYzZE3V/?spm_id_from=333.1387.homepage.video_card.click">Lumina Embodied AI Community</a>, and <a href="https://embodied-world-models.github.io/">NeurIPS 2025 Workshop EWM</a>.</span></li>
+            <li><span class="cv-date">Jul–Sep 2025</span><span>Invited talk on Foundation Model for Robotics at <a href="https://sites.google.com/view/showlab">Show lab, NUS</a>, Prof. <a href="https://alvinwen428.github.io/">Chuan Wen</a>'s Group at Shanghai Jiao Tong University, and <a href="https://cvml.comp.nus.edu.sg/">CVML Group</a> at NUS.</span></li>
+            <li><span class="cv-date">May 2025</span><span>Invited talk on FLIP at <a href="https://www.bilibili.com/video/BV1bUJezjEr6/?spm_id_from=333.337.search-card.all.click&vd_source=47c03ba168a1f19b604168efbc6dc5e6">将门TechBeat AI Community</a>.</span></li>
+            <li><span class="cv-date">Feb–Apr 2025</span><span>Invited talk on Hierarchical Foundation Model for Manipulation at <a href="https://www.au.tsinghua.edu.cn/info/1080/3113.htm">VIP Lab, Tsinghua University</a>, <a href="https://www.leaplab.ai/">Leap Lab, Tsinghua University</a>, and <a href="https://www.shenlanxueyuan.com/open/course/276">深蓝学院</a>.</span></li>
+            <li><span class="cv-date">Dec 2024</span><span>Invited talk on Hierarchical Foundation Model for Manipulation at <a href="https://sites.google.com/view/dai24-embodiedai/">Embodied AI Workshop, DAI 2024</a>.</span></li>
+            <li><span class="cv-date">Dec 2024</span><span>Invited talk on FLIP at <a href="https://mp.weixin.qq.com/s/K49AhJ_U3378ohoNs6f4ng">RL China</a>.</span></li>
+            <li><span class="cv-date">Jul 2024</span><span>Invited talk on ManiFoundationModel at <a href="https://mp.weixin.qq.com/s/K49AhJ_U3378ohoNs6f4ng">DeepTimber Community</a>.</span></li>
+            <li><span class="cv-date">Oct 2023</span><span>Invited talk of LIBERO at Shanghai AI Lab.</span></li>
+            <li><span class="cv-date">Jun 2023</span><span>Invited talk on robot skill learning at <a href="http://hxu.rocks/">TEA Lab</a>, IIIS, Tsinghua University.</span></li>
+            <li><span class="cv-date">Feb 2023</span><span>Invited talk of IIM at <a href="https://www.bilibili.com/video/BV16v4y1x7Ak/?spm_id_from=333.337.search-card.all.click&vd_source=47c03ba168a1f19b604168efbc6dc5e6">RL China</a>.</span></li>
         </ul>
-    </div>
+    </section>
 
-    <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=300&t=tt&d=rcyXRah39kj-PLbVKizpW0aUkwlYbOI3tHtpOLTGudI'></script>
+    <!-- ==================== Teaching ==================== -->
+    <section class="section" id="teaching">
+        <div class="section-heading">
+            <h2>Teaching Experience</h2>
+        </div>
+        <ul class="cv-list cv-list--range">
+            <li><span class="cv-date">Spring 2025</span><span>Teaching Assistant, CS624 Advanced Topics in Robotics, NUS. Lecturer: Prof. David Hsu</span></li>
+            <li><span class="cv-date">Fall 2024</span><span>Teaching Assistant, CS4278/CS5278 Intelligent Robots: Algorithms and Systems, NUS. Lecturer: Prof. <a href="https://linsats.github.io/">Lin Shao</a>. <a href="https://github.com/NUS-LinS-Lab/Mobile-Manipulation">Course Project</a></span></li>
+            <li><span class="cv-date">2021 &amp; 2022</span><span>Teaching Assistant, Matrix Analysis and Applications, Tsinghua University (2021 Spring &amp; 2022 Fall)</span></li>
+        </ul>
+    </section>
+
+    <!-- ==================== Academic Service ==================== -->
+    <section class="section" id="service">
+        <div class="section-heading">
+            <h2>Academic Service</h2>
+        </div>
+        <ul class="plain-list">
+            <li><strong>Conference Reviewer</strong>: CoRL, RSS, ICRA, IROS, NeurIPS, ICML, ICLR, CVPR, ICCV, and ECCV</li>
+            <li><strong>Journal Reviewer</strong>: IJRR, IEEE T-RO, IEEE RA-L</li>
+        </ul>
+    </section>
+
+    <div style="margin-top: 60px;">
+        <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=300&t=tt&d=rcyXRah39kj-PLbVKizpW0aUkwlYbOI3tHtpOLTGudI'></script>
+    </div>
 
     <hr style="margin: 40px auto; border: 0; border-top: 1px solid rgba(0, 0, 0, 0.1); width: 80%;">
 
     <div style="text-align: center; color: #666; font-size: 0.9em; margin-top: 20px; margin-bottom: 20px;">
-        Last updated: Jul 2026
+        Last updated: Nov 2026
     </div>
+
+    <script>
+        /* ---------- News: last 12 months, older items behind [show more] ---------- */
+        (function () {
+            var MONTHS_SHOWN = 12;
+            var FALLBACK_COUNT = 5; // shown when nothing is recent enough
+            var MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+
+            var list = document.getElementById('news-list');
+            var toggle = document.getElementById('news-toggle');
+            if (!list || !toggle) return;
+
+            // "Nov 2026" -> a running month number, or null if the date is not readable.
+            function monthNumber(item) {
+                var date = item.querySelector('.cv-date');
+                var match = date && /([A-Za-z]{3})[a-z]*\.?\s+(\d{4})/.exec(date.textContent);
+                var month = match ? MONTH_NAMES.indexOf(match[1].toLowerCase()) : -1;
+                return month < 0 ? null : Number(match[2]) * 12 + month;
+            }
+
+            var today = new Date();
+            var oldest = today.getFullYear() * 12 + today.getMonth() - MONTHS_SHOWN;
+            var items = Array.prototype.slice.call(list.children);
+            var recent = items.filter(function (item) {
+                var number = monthNumber(item);
+                return number === null || number >= oldest;
+            });
+            if (!recent.length) recent = items.slice(0, FALLBACK_COUNT);
+
+            items.forEach(function (item) {
+                item.classList.toggle('is-extra', recent.indexOf(item) === -1);
+            });
+
+            if (recent.length === items.length) {
+                toggle.hidden = true;
+                return;
+            }
+
+            toggle.addEventListener('click', function () {
+                var collapsed = list.classList.toggle('collapsed');
+                toggle.textContent = collapsed ? '[show more]' : '[show less]';
+                toggle.setAttribute('aria-expanded', String(!collapsed));
+            });
+        })();
+
+        /* ---------- Research: show selected / show all ---------- */
+        (function () {
+            var list = document.getElementById('pub-list');
+            var selectedButton = document.getElementById('pub-filter-selected');
+            var allButton = document.getElementById('pub-filter-all');
+            if (!list || !selectedButton || !allButton) return;
+
+            function setFilter(selectedOnly) {
+                list.classList.toggle('selected-only', selectedOnly);
+                selectedButton.classList.toggle('is-active', selectedOnly);
+                allButton.classList.toggle('is-active', !selectedOnly);
+                selectedButton.setAttribute('aria-pressed', String(selectedOnly));
+                allButton.setAttribute('aria-pressed', String(!selectedOnly));
+            }
+
+            selectedButton.addEventListener('click', function () { setFilter(true); });
+            allButton.addEventListener('click', function () { setFilter(false); });
+        })();
+
+        /* ---------- Profile photo: "Refresh to see a different Chongkai" ----------
+           The page always opens on the default photo. Every image uploaded to
+           PHOTO_DIR on GitHub is picked up automatically (the folder is listed
+           through the public GitHub API), and each click on the button shows
+           another one. The button stays hidden while the folder has no photos. */
+        (function () {
+            var REPO = 'HeegerGao/HeegerGao.github.io';
+            var PHOTO_DIR = 'imgs/profile';
+            // Optional: photos listed here are used even when the GitHub API
+            // cannot be reached, e.g. ['imgs/profile/hiking.jpg'].
+            var EXTRA_PHOTOS = [];
+
+            var CACHE_KEY = 'chongkai-photos-v1';
+            var CACHE_TTL = 10 * 60 * 1000;
+            var IMAGE_PATTERN = /\.(jpe?g|png|webp|gif|avif)$/i;
+            var FADE_MS = 200;
+
+            var img = document.getElementById('profile-img');
+            var button = document.getElementById('photo-refresh');
+            if (!img || !button) return;
+
+            var defaultSrc = img.getAttribute('src');
+            var current = defaultSrc;
+            var photos = [];
+            var queue = [];
+            var busy = false;
+
+            function toUrl(path) {
+                return './' + path.split('/').map(encodeURIComponent).join('/');
+            }
+
+            function readCache() {
+                try {
+                    var cached = JSON.parse(localStorage.getItem(CACHE_KEY));
+                    return cached && Array.isArray(cached.list) ? cached : null;
+                } catch (error) {
+                    return null;
+                }
+            }
+
+            function writeCache(list) {
+                try {
+                    localStorage.setItem(CACHE_KEY, JSON.stringify({ time: Date.now(), list: list }));
+                } catch (error) {
+                    /* Storage can be unavailable (private mode); the list is simply fetched again. */
+                }
+            }
+
+            function listPhotos() {
+                var cached = readCache();
+                if (cached && Date.now() - cached.time < CACHE_TTL) {
+                    return Promise.resolve(cached.list);
+                }
+                var url = 'https://api.github.com/repos/' + REPO + '/contents/' + PHOTO_DIR;
+                return fetch(url, { headers: { Accept: 'application/vnd.github+json' } })
+                    .then(function (response) {
+                        if (!response.ok) throw new Error('GitHub API returned ' + response.status);
+                        return response.json();
+                    })
+                    .then(function (entries) {
+                        var list = entries
+                            .filter(function (entry) { return entry.type === 'file' && IMAGE_PATTERN.test(entry.name); })
+                            .map(function (entry) { return toUrl(entry.path); });
+                        writeCache(list);
+                        return list;
+                    })
+                    .catch(function () {
+                        // Offline or rate-limited: fall back to the last list this browser saw.
+                        return cached ? cached.list : [];
+                    });
+            }
+
+            function shuffle(list) {
+                for (var i = list.length - 1; i > 0; i--) {
+                    var j = Math.floor(Math.random() * (i + 1));
+                    var swap = list[i];
+                    list[i] = list[j];
+                    list[j] = swap;
+                }
+                return list;
+            }
+
+            // One round = every other photo in random order, then the default again.
+            function refillQueue() {
+                queue = shuffle(photos.slice());
+                queue.push(defaultSrc);
+            }
+
+            function preload(src) {
+                return new Promise(function (resolve, reject) {
+                    var loader = new Image();
+                    loader.onload = function () { resolve(src); };
+                    loader.onerror = reject;
+                    loader.src = src;
+                });
+            }
+
+            function forget(src) {
+                photos = photos.filter(function (photo) { return photo !== src; });
+                queue = queue.filter(function (photo) { return photo !== src; });
+                if (!photos.length) button.hidden = true;
+            }
+
+            // Resolves with the next photo that actually loads; broken files are dropped.
+            function nextPhoto() {
+                if (!photos.length) return Promise.reject(new Error('No photos'));
+                if (!queue.length) refillQueue();
+                var src = queue.shift();
+                if (src === current) return nextPhoto();
+                return preload(src).catch(function () {
+                    if (src === defaultSrc) throw new Error('Default photo failed to load');
+                    forget(src);
+                    return nextPhoto();
+                });
+            }
+
+            function show(src) {
+                return new Promise(function (resolve) {
+                    img.classList.add('is-fading');
+                    setTimeout(function () {
+                        img.src = src;
+                        current = src;
+                        img.classList.remove('is-fading');
+                        resolve();
+                    }, FADE_MS);
+                });
+            }
+
+            // Warm the browser cache so the next click swaps instantly.
+            function preloadUpcoming() {
+                if (!photos.length) return;
+                if (!queue.length) refillQueue();
+                if (queue[0] !== current) preload(queue[0]).catch(function () {});
+            }
+
+            button.addEventListener('click', function () {
+                if (busy) return;
+                busy = true;
+                button.classList.remove('is-spinning');
+                void button.offsetWidth; // restart the icon animation
+                button.classList.add('is-spinning');
+                nextPhoto()
+                    .then(show)
+                    .catch(function () {})
+                    .then(function () {
+                        busy = false;
+                        preloadUpcoming();
+                    });
+            });
+
+            listPhotos().then(function (list) {
+                var seen = {};
+                photos = list.concat(EXTRA_PHOTOS.map(toUrl)).filter(function (src) {
+                    if (seen[src] || src === defaultSrc) return false;
+                    seen[src] = true;
+                    return true;
+                });
+                if (!photos.length) return;
+                button.hidden = false;
+                preloadUpcoming();
+            });
+        })();
+    </script>
 </body>
 </html>
